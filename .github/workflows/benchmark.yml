@@ -19,15 +19,6 @@ jobs:
         with:
           clean: false
 
-      - name: install benchmark projects
-        run: |-
-          cd ./benchmarking
-          npm i
-      - name: Run benchmark
-        run: |
-          cd benchmarking
-          ./scripts/benchmark.sh
-          # npm run benchmark:ci
       - name: Compare result
         uses: benchmark-action/github-action-benchmark@v1
         with:
