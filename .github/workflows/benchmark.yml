@@ -1,0 +1,42 @@
+# @format
+---
+name: Task - Benchmark
+
+on:
+  push:
+
+permissions:
+  # deployments permission to deploy GitHub pages website
+  deployments: write
+  # contents permission to update benchmark contents in gh-pages branch
+  contents: write
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          clean: false
+
+      - name: install benchmark projects
+        run: |-
+          cd ./benchmarking
+          npm i
+      - name: Run benchmark
+        run: |
+          cd benchmarking
+          ./scripts/benchmark.sh
+          # npm run benchmark:ci
+      - name: Compare result
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          tool: 'customBiggerIsBetter'
+          output-file-path: ./metrics.json
+          alert-threshold: '120%'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          fail-on-alert: true
+          summary-always: ${{ github.ref == 'refs/heads/main' }}
+          comment-always: false
+          comment-on-alert: false
+          auto-push: ${{ github.ref == 'refs/heads/main' }}
